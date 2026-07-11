@@ -465,7 +465,7 @@
 
   <script>
     // FORM ENDPOINT URL
-    const ENDPOINT = "PASTE_FORM_ENDPOINT_HERE";
+    const ENDPOINT = "https://script.google.com/macros/s/AKfycbz8kPEnIQ3BylADCinljQYqKmthBlFYMSPHzyW2qM9m6_8n9T4xtX8In_7UaeQbJcMz/exec";
 
     // 10 Intersecting Web Dev Words (9 rows x 17 columns)
     const WORDS = [
@@ -832,7 +832,7 @@
         body: JSON.stringify(data)
       })
       .then(response => {
-        if (response.ok || ENDPOINT === "PASTE_FORM_ENDPOINT_HERE") {
+        if (response.ok || ENDPOINT === https://script.google.com/macros/s/AKfycbz8kPEnIQ3BylADCinljQYqKmthBlFYMSPHzyW2qM9m6_8n9T4xtX8In_7UaeQbJcMz/exec) {
           showSuccess();
         } else {
           throw new Error('Network error on submission process.');
@@ -841,7 +841,7 @@
       .catch(error => {
         console.error('Submission encountered an issue:', error);
         
-        if (ENDPOINT === "PASTE_FORM_ENDPOINT_HERE") {
+        if (ENDPOINT === https://script.google.com/macros/s/AKfycbz8kPEnIQ3BylADCinljQYqKmthBlFYMSPHzyW2qM9m6_8n9T4xtX8In_7UaeQbJcMz/exec) {
           // Local fallback representation
           showSuccess();
         } else {
