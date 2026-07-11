@@ -97,6 +97,14 @@
       margin-bottom: 12px;
     }
 
+    /* Specific style to make sure the Greek mu (μ) character renders clearly */
+    .mu-style {
+      font-family: 'JetBrains Mono', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-style: normal;
+      font-weight: 700;
+      text-transform: none;
+    }
+
     h1 {
       font-size: 32px;
       font-weight: 800;
@@ -400,7 +408,7 @@
     
     <!-- Ledger Header -->
     <header>
-      <span class="tag">μLearn Student Newsletter</span>
+      <span class="tag"><span class="mu-style">μ</span>Learn Student Newsletter</span>
       <h1>Web Codex Crossword</h1>
       <p class="instructions">Click cells or clues to write answers. Press backspace to clear. Tap twice on a cell to swap directions.</p>
     </header>
@@ -461,7 +469,7 @@
 
     // 10 Intersecting Web Dev Words (9 rows x 17 columns)
     const WORDS = [
-      { number: 1, direction: 'down', answer: 'URL', row: 0, col: 2, clue: "The exact locator address pointing to a web document's location (such as https://μlearn.org)." },
+      { number: 1, direction: 'down', answer: 'URL', row: 0, col: 2, clue: "The exact locator address pointing to a web document's location." },
       { number: 2, direction: 'across', answer: 'BROWSER', row: 1, col: 1, clue: "Software application designed to parse code and present graphical web pages." },
       { number: 3, direction: 'down', answer: 'SERVER', row: 1, col: 5, clue: "A processing machine that processes client requests and sends file responses." },
       { number: 4, direction: 'down', answer: 'GITHUB', row: 3, col: 10, clue: "A popular web platform for hosting git repositories, symbolized by an 'Octocat' mascot." },
@@ -861,4 +869,4 @@
     }
   </script>
 </body>
-      </html>
+</html>
