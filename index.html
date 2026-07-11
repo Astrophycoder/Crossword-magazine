@@ -461,22 +461,22 @@
 
     // 10 Intersecting Web Dev Words (9 rows x 17 columns)
     const WORDS = [
-      { number: 1, direction: 'down', answer: 'DOM', row: 0, col: 3, clue: "The programming interface representing web documents as a nested node tree." },
-      { number: 2, direction: 'across', answer: 'BROWSER', row: 1, col: 1, clue: "The agent used to retrieve, compile, and present document files over the network." },
-      { number: 3, direction: 'down', answer: 'SERVER', row: 1, col: 5, clue: "The processing hardware running application loops and dispatching request resources." },
-      { number: 4, direction: 'down', answer: 'GITHUB', row: 3, col: 10, clue: "Online version history storage designed around git repository architectures." },
-      { number: 5, direction: 'down', answer: 'API', row: 3, col: 11, clue: "The standard contract allowing separate server nodes to exchange formatted datasets." },
-      { number: 6, direction: 'across', answer: 'JAVASCRIPT', row: 4, col: 3, clue: "The dynamic scripting client script interpreting interactive logic sequences." },
-      { number: 7, direction: 'across', answer: 'CACHE', row: 5, col: 1, clue: "Temporary memory structures avoiding repeated server request processing delays." },
-      { number: 7, direction: 'down', answer: 'CSS', row: 5, col: 1, clue: "Stylistic rules mapping structural layout formatting properties onto markup targets." },
-      { number: 8, direction: 'across', answer: 'HTML', row: 6, col: 10, clue: "Structural baseline mapping standard tag components to visual rendering spaces." },
-      { number: 9, direction: 'across', answer: 'BACKEND', row: 8, col: 10, clue: "Invisible database management executing computational persistence programs." }
+      { number: 1, direction: 'down', answer: 'URL', row: 0, col: 2, clue: "The exact locator address pointing to a web document's location." },
+      { number: 2, direction: 'across', answer: 'BROWSER', row: 1, col: 1, clue: "Software application designed to parse code and present graphical web pages." },
+      { number: 3, direction: 'down', answer: 'SERVER', row: 1, col: 5, clue: "A processing machine that processes client requests and sends file responses." },
+      { number: 4, direction: 'down', answer: 'GITHUB', row: 3, col: 10, clue: "A popular web platform for hosting git repositories, symbolized by an 'Octocat' mascot." },
+      { number: 5, direction: 'down', answer: 'API', row: 3, col: 11, clue: "An interface defining protocols that let separate applications talk and share data." },
+      { number: 6, direction: 'across', answer: 'JAVASCRIPT', row: 4, col: 3, clue: "The client-side scripting language that handles real-time visual page interactions." },
+      { number: 7, direction: 'across', answer: 'CACHE', row: 5, col: 1, clue: "A temporary storage layer that records web files locally to improve page load speed." },
+      { number: 7, direction: 'down', answer: 'CSS', row: 5, col: 1, clue: "The stylesheet language used to configure the typography, layout, and colors of markup." },
+      { number: 8, direction: 'across', answer: 'HTML', row: 6, col: 10, clue: "The basic markup standard used to organize the semantic content of a web page." },
+      { number: 9, direction: 'across', answer: 'BACKEND', row: 8, col: 10, clue: "The server-side system managing background computation logic and database tables." }
     ];
 
     // Tracker state
     const state = {
       focusedRow: 0,
-      focusedCol: 3,
+      focusedCol: 2,
       currentDirection: 'down',
       activeWord: null
     };
@@ -485,8 +485,8 @@
       renderGrid();
       renderClues();
       
-      // Auto-focus starting position of 1 Down (DOM)
-      selectCell(0, 3, false);
+      // Auto-focus starting position of 1 Down (URL)
+      selectCell(0, 2, false);
       setupGlobalListeners();
     });
 
@@ -537,7 +537,6 @@
             const inputEl = document.createElement('input');
             inputEl.className = 'cell-input';
             inputEl.type = 'text';
-            // Removed maxlength to allow replacement validation in the dynamic input event
             inputEl.setAttribute('autocomplete', 'off');
             inputEl.setAttribute('spellcheck', 'false');
             cellEl.appendChild(inputEl);
