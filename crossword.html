@@ -22,7 +22,7 @@
       --text-main: #2b221a;        /* Deep charcoal-brown book ink */
       --text-muted: #6e5e50;       /* Aged faded ink */
       --cell-bg: #faf5eb;          /* Crossword tile color */
-      --grid-bg: #8b5a2b;          /* Grid separation color */
+      --grid-bg: #6d4a29;          /* Grid line color */
       --success: #3f6843;          /* Vintage ink green */
       --success-light: rgba(63, 104, 67, 0.08);
     }
@@ -38,7 +38,7 @@
       color: var(--text-main);
       font-family: 'EB Garamond', Georgia, serif;
       line-height: 1.6;
-      padding: 3rem 1.5rem;
+      padding: 3rem 1.25rem;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -115,15 +115,26 @@
       margin-top: 8px;
     }
 
-    /* Crossword grid styling */
+    /* Crossword grid wrapper - handles overflow cleanly without left-clipping */
     .grid-wrapper {
       width: 100%;
       overflow-x: auto;
-      padding: 4px;
-      display: flex;
-      justify-content: center;
+      padding: 6px;
+      display: block;
       -webkit-overflow-scrolling: touch;
       z-index: 1;
+    }
+
+    /* Styled custom vintage paper scrollbar */
+    .grid-wrapper::-webkit-scrollbar {
+      height: 6px;
+    }
+    .grid-wrapper::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+    }
+    .grid-wrapper::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
     }
 
     .crossword-grid {
@@ -133,8 +144,10 @@
       gap: 1px;
       width: 100%;
       max-width: 680px;
+      min-width: 560px; /* Prevents cell squishing on mobile views */
+      margin: 0 auto;
       background-color: var(--grid-bg);
-      border: 2px solid var(--grid-bg);
+      border: 3px solid var(--border-dark);
       border-radius: 2px;
       overflow: hidden;
       box-shadow: 0 4px 12px rgba(43, 34, 26, 0.1);
@@ -144,19 +157,22 @@
       position: relative;
       aspect-ratio: 1;
       background-color: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       transition: all 0.15s ease;
     }
 
+    /* Solid dark ink blocks for classic crossword style */
     .empty-cell {
-      background-color: var(--accent);
-      opacity: 0.15;
+      background-color: var(--border-dark);
     }
 
     .active-cell {
       background-color: var(--cell-bg);
     }
 
-    /* Small book-plate number styling */
+    /* Small book-plate numbers in top-left corners */
     .cell-number {
       position: absolute;
       top: 1px;
@@ -170,6 +186,9 @@
     }
 
     .cell-input {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
       border: none;
@@ -182,7 +201,8 @@
       text-transform: uppercase;
       outline: none;
       padding: 0;
-      caret-color: transparent;
+      padding-top: 4px; /* Offset spacing to avoid top-left cell number */
+      caret-color: transparent; /* Seamless focus styling */
     }
 
     /* Soft vintage highlighter styling */
@@ -343,7 +363,7 @@
       cursor: not-allowed;
     }
 
-    /* Succesful Ink Stamp confirmation */
+    /* Successful Ink Stamp confirmation */
     .confirmation-card {
       width: 100%;
       max-width: 680px;
@@ -409,7 +429,7 @@
     </div>
 
     <!-- Submission ledger blanks -->
-    <div class="form-container">
+    <div class="form-container" id="form-container">
       <form id="submission-form">
         <div class="form-group">
           <label for="student-name">Name *</label>
@@ -453,7 +473,7 @@
       { number: 9, direction: 'across', answer: 'BACKEND', row: 8, col: 10, clue: "Invisible database management executing computational persistence programs." }
     ];
 
-    // Tracker
+    // Tracker state
     const state = {
       focusedRow: 0,
       focusedCol: 3,
@@ -517,7 +537,7 @@
             const inputEl = document.createElement('input');
             inputEl.className = 'cell-input';
             inputEl.type = 'text';
-            inputEl.maxLength = 1;
+            // Removed maxlength to allow replacement validation in the dynamic input event
             inputEl.setAttribute('autocomplete', 'off');
             inputEl.setAttribute('spellcheck', 'false');
             cellEl.appendChild(inputEl);
@@ -591,8 +611,12 @@
       state.activeWord = chosenWord;
 
       const input = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"] .cell-input`);
-      if (input && document.activeElement !== input) {
-        input.focus();
+      if (input) {
+        if (document.activeElement !== input) {
+          input.focus();
+        }
+        // Auto-select text so typing replacement works flawlessly
+        input.select();
       }
 
       updateHighlights();
@@ -741,10 +765,16 @@
         }
       });
 
+      // Resolved Input event processing: handles replacement automatically even if character is selected
       gridEl.addEventListener('input', (e) => {
         if (e.target.classList.contains('cell-input')) {
           const cellInput = e.target;
           let val = cellInput.value.toUpperCase().replace(/[^A-Z]/g, '');
+          
+          // Instantly slice away older trailing characters to support override on mobile devices
+          if (val.length > 0) {
+            val = val.substring(val.length - 1);
+          }
           cellInput.value = val;
 
           if (val !== '') {
@@ -815,16 +845,17 @@
       });
     }
 
-    // Success transition
+    // Success state transition
     function showSuccess() {
+      // Disable editing on the active crossword grid
       document.querySelectorAll('.cell-input').forEach(input => {
         input.disabled = true;
       });
-      document.getElementById('student-name').disabled = true;
-      document.getElementById('student-college').disabled = true;
-      document.getElementById('student-discord').disabled = true;
-      document.getElementById('submit-btn').disabled = true;
+      
+      // Hide the form to minimize interface clutter on submit
+      document.getElementById('form-container').classList.add('hidden');
 
+      // Reveal confirmation stamp card
       const confirmationCard = document.getElementById('confirmation-card');
       confirmationCard.classList.remove('hidden');
       confirmationCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
