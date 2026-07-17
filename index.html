@@ -25,6 +25,8 @@
       --grid-bg: #6d4a29;          /* Grid line color */
       --success: #3f6843;          /* Vintage ink green */
       --success-light: rgba(63, 104, 67, 0.08);
+      --error: #8b3a2b;            /* Vintage ink red for errors */
+      --error-light: rgba(139, 58, 43, 0.08);
     }
 
     * {
@@ -371,6 +373,18 @@
       cursor: not-allowed;
     }
 
+    /* Error notice, matches the ledger aesthetic */
+    .error-notice {
+      width: 100%;
+      background-color: var(--error-light);
+      border: 1px dashed var(--error);
+      border-radius: 4px;
+      padding: 0.85rem 1rem;
+      margin-bottom: 1rem;
+      font-size: 13px;
+      color: var(--error);
+    }
+
     /* Successful Ink Stamp confirmation */
     .confirmation-card {
       width: 100%;
@@ -410,7 +424,7 @@
     <header>
       <span class="tag"><span class="mu-style">μ</span>Learn Student Newsletter</span>
       <h1>Web Codex Crossword</h1>
-      <p class="instructions">Click cells or clues to write answers. Press backspace to clear. Tap twice on a cell to swap directions.</p>
+      <p class="instructions">Click a cell or a clue to start typing. Backspace clears a letter. Tap a cell twice to switch between across and down.</p>
     </header>
 
     <!-- Crossword Grid -->
@@ -438,14 +452,17 @@
 
     <!-- Submission ledger blanks -->
     <div class="form-container" id="form-container">
+      <div class="error-notice hidden" id="error-notice">
+        Hmm, that didn't go through. Please check your internet connection and try again — your answers are still here, nothing is lost.
+      </div>
       <form id="submission-form">
         <div class="form-group">
           <label for="student-name">Name *</label>
           <input type="text" id="student-name" required placeholder="Type your name here">
         </div>
         <div class="form-group">
-          <label for="student-college">College *</label>
-          <input type="text" id="student-college" required placeholder="Type your college here">
+          <label for="student-college">School / College *</label>
+          <input type="text" id="student-college" required placeholder="Type your school or college here">
         </div>
         <div class="form-group">
           <label for="student-discord">Discord Username</label>
@@ -465,20 +482,20 @@
 
   <script>
     // FORM ENDPOINT URL - Points directly to your deployment Web App
-    const ENDPOINT = "https://script.google.com/macros/s/AKfycbxsAaC1eyTu6vCIgV57ZZrLeNszKJqB9-jedoR4F9eHLaGfasMAxOFmmhVZsq_tKi8PQQ/exec";
+    const ENDPOINT = "https://sheetdb.io/api/v1/mps6b7vakk6dm";
 
     // 10 Intersecting Web Dev Words (9 rows x 17 columns)
     const WORDS = [
-      { number: 1, direction: 'down', answer: 'URL', row: 0, col: 2, clue: "The exact locator address pointing to a web document's location (such as https://<span class='mu-style'>μ</span>learn.org)." },
-      { number: 2, direction: 'across', answer: 'BROWSER', row: 1, col: 1, clue: "Software application designed to parse code and present graphical web pages." },
-      { number: 3, direction: 'down', answer: 'SERVER', row: 1, col: 5, clue: "A processing machine that processes client requests and sends file responses." },
-      { number: 4, direction: 'down', answer: 'GITHUB', row: 3, col: 10, clue: "A popular web platform for hosting git repositories, symbolized by an 'Octocat' mascot." },
-      { number: 5, direction: 'down', answer: 'API', row: 3, col: 11, clue: "An interface defining protocols that let separate applications talk and share data." },
-      { number: 6, direction: 'across', answer: 'JAVASCRIPT', row: 4, col: 3, clue: "The client-side scripting language that handles real-time visual page interactions." },
-      { number: 7, direction: 'across', answer: 'CACHE', row: 5, col: 1, clue: "A temporary storage layer that records web files locally to improve page load speed." },
-      { number: 7, direction: 'down', answer: 'CSS', row: 5, col: 1, clue: "The stylesheet language used to configure the typography, layout, and colors of markup." },
-      { number: 8, direction: 'across', answer: 'HTML', row: 6, col: 10, clue: "The basic markup standard used to organize the semantic content of a web page." },
-      { number: 9, direction: 'across', answer: 'BACKEND', row: 8, col: 10, clue: "The server-side system managing background computation logic and database tables." }
+      { number: 1, direction: 'down', answer: 'URL', row: 0, col: 2, clue: "You type this in the address bar to go to a website, like https://<span class='mu-style'>μ</span>learn.org" },
+      { number: 2, direction: 'across', answer: 'BROWSER', row: 1, col: 1, clue: "Chrome, Firefox, Safari — the app you're probably reading this in right now." },
+      { number: 3, direction: 'down', answer: 'SERVER', row: 1, col: 5, clue: "The computer somewhere else that sends a website's files to your browser when asked." },
+      { number: 4, direction: 'down', answer: 'GITHUB', row: 3, col: 10, clue: "Where developers store and share their code, home of the Octocat mascot." },
+      { number: 5, direction: 'down', answer: 'API', row: 3, col: 11, clue: "A set of rules that lets two apps talk to each other and share data." },
+      { number: 6, direction: 'across', answer: 'JAVASCRIPT', row: 4, col: 3, clue: "The language that makes web pages interactive — clicks, animations, pop-ups, all of it." },
+      { number: 7, direction: 'across', answer: 'CACHE', row: 5, col: 1, clue: "Why a page loads faster the second time you visit it — your browser remembered it." },
+      { number: 7, direction: 'down', answer: 'CSS', row: 5, col: 1, clue: "The language that decides how a page looks — colors, fonts, spacing, layout." },
+      { number: 8, direction: 'across', answer: 'HTML', row: 6, col: 10, clue: "The very first language every web developer learns — it builds a page's structure." },
+      { number: 9, direction: 'across', answer: 'BACKEND', row: 8, col: 10, clue: "The behind-the-scenes part of an app — databases, logic, everything you don't see." }
     ];
 
     // Tracker state
@@ -811,7 +828,7 @@
           name: document.getElementById('student-name').value.trim(),
           college: document.getElementById('student-college').value.trim(),
           discord: document.getElementById('student-discord').value.trim(),
-          crossword: crosswordAnswers
+          ...crosswordAnswers
         };
 
         submitCrossword(submissionPayload);
@@ -821,25 +838,33 @@
     // Form Submission request call
     function submitCrossword(data) {
       const submitBtn = document.getElementById('submit-btn');
+      const errorNotice = document.getElementById('error-notice');
+      errorNotice.classList.add('hidden');
       submitBtn.disabled = true;
       submitBtn.innerText = "Submitting...";
 
-      // Bypass CORS Preflight block using simple 'text/plain' content type
+      // SheetDB expects { data: [ {...one row per object...} ] } and supports
+      // proper CORS, so — unlike the old Apps Script setup — we can actually
+      // read the response and confirm the row was written before celebrating.
       fetch(ENDPOINT, {
         method: 'POST',
         headers: {
-          'Content-Type': 'text/plain;charset=utf-8'
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(data),
-        redirect: 'follow'
+        body: JSON.stringify({ data: [data] })
       })
       .then(response => {
+        if (!response.ok) {
+          throw new Error(`SheetDB responded with status ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(() => {
         showSuccess();
       })
       .catch(error => {
-        console.error('Submission encountered an issue:', error);
-        // Fail gracefully and show success card so user flow isn't interrupted
-        showSuccess();
+        console.error('Submission failed:', error);
+        showError();
       });
     }
 
@@ -858,6 +883,17 @@
       confirmationCard.classList.remove('hidden');
       confirmationCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
+
+    // Error state: let the student know it didn't go through and let them retry
+    function showError() {
+      const submitBtn = document.getElementById('submit-btn');
+      const errorNotice = document.getElementById('error-notice');
+
+      errorNotice.classList.remove('hidden');
+      submitBtn.disabled = false;
+      submitBtn.innerText = "Submit Completed Ledger";
+      errorNotice.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
   </script>
 </body>
-</html>
+  </html>
